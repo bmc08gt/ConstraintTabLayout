@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs xmlns:android="http://schemas.android.com/apk/res/android">
+    <tab android:id="@+id/tab_first"
+         android:label="FIRST TAB" />
+
+    <tab android:id="@+id/tab_second"
+         android:label="SECOND TAB" />
+
+    <tab android:id="@+id/tab_third"
+         android:label="THIRD TAB" />
+</tabs>

@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="Tab">
+        <attr name="hideLabel" format="boolean" />
+    </declare-styleable>
+
     <declare-styleable name="ConstraintTabLayout">
+        <attr name="tabs" format="reference" />
         <attr name="tabs_selection" format="integer" />
         <attr name="tabs_unselectedBg" format="reference" />
         <attr name="tabs_unselectedTextColor" format="color" />
