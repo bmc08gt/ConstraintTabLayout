@@ -2,5 +2,23 @@
 
 ![screenshot](images/constraint-tabs.png)
 
+```xml
+ <com.bmcreations.constrainttabs.ConstraintTabLayout
+            android:id="@+id/tabs"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            app:tabs_selectedBg="@color/selectedTabBg"
+            app:tabs_unselectedBg="@color/unselectedTabBg"
+            app:tabs_selectedTextColor="@color/selectedTabText"
+            app:tabs_unselectedTextColor="@color/unselectedTabText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+    />
+```
+
 [![CircleCI](https://circleci.com/gh/bmc08gt/ConstraintTabLayout.svg?style=svg)](https://circleci.com/gh/bmc08gt/ConstraintTabLayout)
 
