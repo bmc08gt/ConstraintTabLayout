@@ -1,4 +1,4 @@
-buildscript {
+buildscript { 
     apply from: 'dependencies.gradle'
     apply from: 'app-versions.gradle'
     apply from: 'gradle/tasks.gradle'
