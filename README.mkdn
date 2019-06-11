@@ -1,3 +1,6 @@
-# kotlin-android-template
-My usual templating for a kotlin
+# ConstraintTabLayout
+
+![screenshot](images/constraint-tabs.png)
+
+[![CircleCI](https://circleci.com/gh/bmc08gt/ConstraintTabLayout.svg?style=svg)](https://circleci.com/gh/bmc08gt/ConstraintTabLayout)
 
