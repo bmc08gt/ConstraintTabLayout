@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.use
 
 data class Tab(
+    val id: Int? = null,
     val label: String,
     val iconResId: Int? = null,
     val hideLabel: Boolean = false
@@ -80,6 +81,10 @@ class ConstraintTabLayout
 
         attrs?.let { attributes ->
             context.obtainStyledAttributes(attributes, R.styleable.ConstraintTabLayout).use {
+                if (it.hasValue(R.styleable.ConstraintTabLayout_tabs)) {
+                    providedTabs.addAll(TabInflater(context).inflate(it.getResourceId(R.styleable.ConstraintTabLayout_tabs, -1)))
+                }
+
                 if (it.hasValue(R.styleable.ConstraintTabLayout_tabs_unselectedBg)) {
                     val unselected = it.getDrawable(R.styleable.ConstraintTabLayout_tabs_unselectedBg)
                     unselectedBackground = unselected ?: context.getDrawable(R.drawable.default_unselected_bg)!!
@@ -125,7 +130,7 @@ class ConstraintTabLayout
         providedTabs.mapIndexed { index, tab ->
             TabView(tab.apply { this.index = index }, AppCompatTextView(context))
         }.forEach {
-            it.tv.id = View.generateViewId()
+            it.tv.id = it.tab.id ?: View.generateViewId()
             it.tv.tag = "constraint_tab_${it.tab.label}--${it.tab.index}"
             it.tv.background = unselectedBackground
             it.tv.text = it.tab.label
@@ -168,7 +173,9 @@ class ConstraintTabLayout
         super.onLayout(changed, left, top, right, bottom)
         if (!laidOut) {
             laidOut = true
-            select(selection ?: tabs.first(), notify = false)
+            if (tabs.isNotEmpty()) {
+                select(selection ?: tabs.first(), notify = false)
+            }
         }
     }
 
