@@ -2,5 +2,5 @@ def appInfo = [:]
 
 appInfo.applicationId = "com.bmcreations.constrainttabs"
 appInfo.versionCode = 1
-appInfo.versionName = "1.0"
+appInfo.versionName = "0.1"
 ext.appInfo = appInfo
