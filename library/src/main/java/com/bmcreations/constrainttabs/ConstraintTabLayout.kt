@@ -1,10 +1,10 @@
 package com.bmcreations.constrainttabs
 
+import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.TypedArray
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -21,18 +21,22 @@ import androidx.constraintlayout.widget.Group
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.use
 
-data class Tab(val label: String,
-               val iconResId: Int? = null,
-               val hideLabel: Boolean = false) {
+data class Tab(
+    val label: String,
+    val iconResId: Int? = null,
+    val hideLabel: Boolean = false
+) {
     var index = 0
 }
 
-data class TabView (val tab: Tab, val tv: AppCompatTextView)
+data class TabView(val tab: Tab, val tv: AppCompatTextView)
 
 var View.selected: Boolean by FieldProperty { false }
 
 @SuppressLint("Recycle")
-class ConstraintTabLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : ConstraintLayout(context, attrs, defStyleAttr) {
+class ConstraintTabLayout
+@JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
+    ConstraintLayout(context, attrs, defStyleAttr) {
 
     val providedTabs: MutableList<Tab> = mutableListOf()
     val tabs: MutableList<TabView> = mutableListOf()
@@ -55,6 +59,22 @@ class ConstraintTabLayout @JvmOverloads constructor(context: Context, attrs: Att
 
     var selection: TabView? = null
 
+    private fun _selectionAnimator(view: View): Animator {
+        val selectXAnimator = ObjectAnimator.ofFloat(view, View.SCALE_X, 0.8f, 1f)
+        val selectYAnimator = ObjectAnimator.ofFloat(view, View.SCALE_Y, 0.8f, 1f)
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(selectXAnimator, selectYAnimator)
+        animatorSet.interpolator = OvershootInterpolator(1.3f)
+        animatorSet.duration = 300
+        return animatorSet
+    }
+
+    interface OnTabSelectedAnimation {
+        fun tabSelectionAnimation(view: View): Animator
+    }
+
+    var selectionAnimation: OnTabSelectedAnimation? = null
+
     init {
         var initialSelectionIndex = 0
 
@@ -66,7 +86,10 @@ class ConstraintTabLayout @JvmOverloads constructor(context: Context, attrs: Att
                 }
 
                 if (it.hasValue(R.styleable.ConstraintTabLayout_tabs_unselectedTextColor)) {
-                    unselectedTextColor = it.getColor(R.styleable.ConstraintTabLayout_tabs_unselectedTextColor, android.R.attr.textColorPrimary)
+                    unselectedTextColor = it.getColor(
+                        R.styleable.ConstraintTabLayout_tabs_unselectedTextColor,
+                        android.R.attr.textColorPrimary
+                    )
                 }
 
                 if (it.hasValue(R.styleable.ConstraintTabLayout_tabs_selectedBg)) {
@@ -75,7 +98,10 @@ class ConstraintTabLayout @JvmOverloads constructor(context: Context, attrs: Att
                 }
 
                 if (it.hasValue(R.styleable.ConstraintTabLayout_tabs_selectedTextColor)) {
-                    selectedTextColor = it.getColor(R.styleable.ConstraintTabLayout_tabs_selectedTextColor, android.R.attr.textColorPrimaryInverse)
+                    selectedTextColor = it.getColor(
+                        R.styleable.ConstraintTabLayout_tabs_selectedTextColor,
+                        android.R.attr.textColorPrimaryInverse
+                    )
                 }
 
                 if (it.hasValue(R.styleable.ConstraintTabLayout_tabs_selection)) {
@@ -85,8 +111,10 @@ class ConstraintTabLayout @JvmOverloads constructor(context: Context, attrs: Att
         }
 
         group = Group(context, attrs, defStyleAttr)
-        ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT).also { group.layoutParams = it }
+        ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ).also { group.layoutParams = it }
 
         // TODO: Add tabs in xml
         updateTabs(initialSelectionIndex)
@@ -183,11 +211,13 @@ class ConstraintTabLayout @JvmOverloads constructor(context: Context, attrs: Att
     }
 
     private fun reset() {
-        group.referencedIds.forEach { id -> tabs.find { it.tv.id == id }?.let {
-            it.tv.selected = false
-            it.tv.setTextColor(unselectedTextColor)
-            it.tv.background = unselectedBackground
-        } }
+        group.referencedIds.forEach { id ->
+            tabs.find { it.tv.id == id }?.let {
+                it.tv.selected = false
+                it.tv.setTextColor(unselectedTextColor)
+                it.tv.background = unselectedBackground
+            }
+        }
     }
 
     private fun select(test: TabView, reselect: Boolean = false, notify: Boolean = true) {
@@ -210,13 +240,8 @@ class ConstraintTabLayout @JvmOverloads constructor(context: Context, attrs: Att
     }
 
     private fun runTabSelectionAnimation(view: View) {
-        val selectXAnimator = ObjectAnimator.ofFloat(view, View.SCALE_X, 0.8f, 1f)
-        val selectYAnimator = ObjectAnimator.ofFloat(view, View.SCALE_Y, 0.8f, 1f)
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(selectXAnimator, selectYAnimator)
-        animatorSet.interpolator = OvershootInterpolator(1.3f)
-        animatorSet.duration = 300
-        animatorSet.start()
+        val animator = selectionAnimation?.tabSelectionAnimation(view) ?: _selectionAnimator(view)
+        animator.start()
     }
 
     val Number.dp: Int
